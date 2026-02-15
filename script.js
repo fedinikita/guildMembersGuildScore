@@ -198,6 +198,8 @@ const membersName = [
 const GUILDERS_LIST = "GUILDERS_LIST";
 const CACHE_MINUTES = 60;
 
+let wasError = false;
+
 const classMap = {
     necromancer: "Некромант",
     paladin: "Паладин",
@@ -254,6 +256,7 @@ async function fetchWithRetry(url, options, retryCount = 0) {
                 return fetchWithRetry(url, options, retryCount + 1);
             } else {
                 console.error(`❌ Превышено количество попыток для ${url}`);
+                wasError = true;
                 return null;
             }
         }
@@ -374,7 +377,7 @@ async function main() {
             
             // Сортируем по GS от большего к меньшему
             sortedResults = validResults.sort((a, b) => b.gs - a.gs);
-            localStorage.setItem(GUILDERS_LIST, JSON.stringify({timemark: Date.now(), sortedResults}))
+            !wasError && localStorage.setItem(GUILDERS_LIST, JSON.stringify({timemark: Date.now(), sortedResults}))
         } else {
             sortedResults = freshCachedResults.sortedResults;
         }
